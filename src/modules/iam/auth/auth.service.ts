@@ -14,10 +14,16 @@ export class AuthService {
   async login(dto: LoginDto) {
     const { username, password } = dto;
 
+    // 1. Consulta incluyendo el rol del usuario mediante JOIN
     const query = `
-      SELECT u.*, g.name AS gender_name
+      SELECT 
+        u.*, 
+        g.name AS gender_name,
+        r.name AS role_name
       FROM seguridad.users u
       INNER JOIN shared.genders g ON u.gender_id = g.id
+      LEFT JOIN seguridad.user_roles ur ON u.id = ur.user_id
+      LEFT JOIN seguridad.roles r ON ur.role_id = r.id
       WHERE (u.email = $1 OR u.username = $1) AND u.is_deleted = false;
     `;
     const result = await this.db.query(query, [username]);
@@ -28,19 +34,19 @@ export class AuthService {
 
     const user = result.rows[0];
 
-    // Validar contraseña con bcrypt
+    // 2. Validar contraseña con bcrypt
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas.');
     }
 
-    // Payload limpio y ligero (solo la identidad básica del usuario)
-    const payload = { sub: user.id, email: user.email, username: user.username };
+    // 3. Payload limpio y ligero (incluyendo el rol si lo necesitas en el token)
+    const payload = { sub: user.id, email: user.email, username: user.username, role: user.role_name };
     
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    // Guardar el refresh token en la BD (Opción 1)
+    // 4. Guardar el refresh token en la BD
     const updateQuery = `
       UPDATE seguridad.users 
       SET current_refresh_token = $1, updated_at = CURRENT_TIMESTAMP 
@@ -48,14 +54,15 @@ export class AuthService {
     `;
     await this.db.query(updateQuery, [refreshToken, user.id]);
 
-    // Limpiar datos sensibles de la respuesta
-    delete user.password_hash;
-    delete user.current_refresh_token;
-
+    // 5. Retornar únicamente los tokens y los datos de usuario solicitados
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
-      user,
+      user: {
+        first_name: user.name, // O el nombre exacto de tu columna para el nombre
+        last_name: user.lastname,   // O el nombre exacto de tu columna para el apellido
+        role: user.role_name || null,
+      },
     };
   }
 

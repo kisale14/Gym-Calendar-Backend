@@ -5,6 +5,7 @@ import databaseConfig from './config/database.config.js';
 import { DatabaseModule } from './database/database.module.js';
 import { SharedModule } from './shared/shared.module.js';
 import { IamModule } from './modules/iam/iam.module.js'
+import { LessonsModule } from './modules/schedule/lessons/lessons.module.js';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -14,7 +15,7 @@ import { IamModule } from './modules/iam/iam.module.js'
     HelthModule, 
     DatabaseModule, 
     SharedModule, 
-    IamModule
+    IamModule, LessonsModule
   ],
   providers: [],
 })
