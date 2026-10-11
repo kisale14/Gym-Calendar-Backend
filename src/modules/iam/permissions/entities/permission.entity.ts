@@ -5,3 +5,7 @@ export class Permission {
   created_at: Date;
   updated_at: Date;
 }
+
+export class GroupedPermissions {
+  [resourceTitle: string]: Permission[];
+}

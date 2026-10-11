@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RolesService } from './roles.service.js';
 import { CreateRoleDto } from './dto/create-role.dto.js';
 import { UpdateRoleDto } from './dto/update-role.dto.js';
@@ -15,6 +23,13 @@ export class RolesController {
   @Get()
   findAll() {
     return this.rolesService.findAll();
+  }
+
+  // IMPORTANTE: esta ruta estática debe ir ANTES de @Get(':id')
+  // para que NestJS no la interprete como un parámetro dinámico
+  @Get('with-permissions')
+  findAllWithPermissions() {
+    return this.rolesService.findAllWithPermissions();
   }
 
   @Get(':id')

@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, MaxLength, MinLength, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsOptional,
+} from 'class-validator';
 
 export class CreatePermissionDto {
   @IsString()

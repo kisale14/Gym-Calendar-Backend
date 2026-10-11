@@ -1,5 +1,14 @@
 // src/shared/waiting-statuses/waiting-statuses.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { WaitingStatusesService } from './waiting-statuses.service.js';
 import { CreateWaitingStatusDto } from './dto/create-waiting-status.dto.js';
 import { UpdateWaitingStatusDto } from './dto/update-waiting-status.dto.js';
@@ -11,11 +20,15 @@ import { RequirePermissions } from '../../decorators/permissions.decorator.js';
 @Controller('waiting-statuses')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class WaitingStatusesController {
-  constructor(private readonly waitingStatusesService: WaitingStatusesService) {}
+  constructor(
+    private readonly waitingStatusesService: WaitingStatusesService,
+  ) {}
 
   @Post()
   @RequirePermissions('waiting-statuses:create')
-  create(@Body() createWaitingStatusDto: CreateWaitingStatusDto): Promise<WaitingStatus> {
+  create(
+    @Body() createWaitingStatusDto: CreateWaitingStatusDto,
+  ): Promise<WaitingStatus> {
     return this.waitingStatusesService.create(createWaitingStatusDto);
   }
 
@@ -33,7 +46,10 @@ export class WaitingStatusesController {
 
   @Patch(':id')
   @RequirePermissions('waiting-statuses:update')
-  update(@Param('id') id: string, @Body() updateWaitingStatusDto: UpdateWaitingStatusDto): Promise<WaitingStatus> {
+  update(
+    @Param('id') id: string,
+    @Body() updateWaitingStatusDto: UpdateWaitingStatusDto,
+  ): Promise<WaitingStatus> {
     return this.waitingStatusesService.update(id, updateWaitingStatusDto);
   }
 

@@ -1,9 +1,23 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
+
+export interface PaginatedResult<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 @Injectable()
 export class UsersService {
@@ -11,7 +25,10 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(createUserDto.password_hash, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password_hash,
+      saltRounds,
+    );
 
     try {
       const query = `
@@ -38,7 +55,9 @@ export class UsersService {
     } catch (error: any) {
       // Manejo de restricciones únicas en PostgreSQL (email o username duplicados)
       if (error.code === '23505') {
-        throw new ConflictException('El correo electrónico o el nombre de usuario ya se encuentran registrados.');
+        throw new ConflictException(
+          'El correo electrónico o el nombre de usuario ya se encuentran registrados.',
+        );
       }
       // Violación de llave foránea (gender_id no existe)
       if (error.code === '23503') {
@@ -48,16 +67,94 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedResult<Partial<User>>> {
+    const currentPage = Math.max(1, Number(page));
+    const itemsPerPage = Math.max(1, Number(limit));
+    const offset = (currentPage - 1) * itemsPerPage;
+
+    // 1. Obtener el conteo total de usuarios activos
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM seguridad.users u
+      WHERE u.is_deleted = false;
+    `;
+    const countResult = await this.db.query(countQuery);
+    const total = parseInt(countResult.rows[0].total, 10);
+
+    // 2. Consultar los usuarios paginados (excluyendo columnas sensibles)
     const query = `
       SELECT 
-        u.*, 
-        g.name AS gender_name 
+        u.id, 
+        u.name, 
+        u.lastname, 
+        u.date_birth, 
+        u.email, 
+        u.username, 
+        u.image, 
+        u.phone, 
+        u.gender_id, 
+        g.name AS gender_name,
+        r.name AS role_name, -- <--- Rol del usuario
+        u.is_deleted, 
+        u.version, 
+        u.created_at, 
+        u.updated_at
       FROM seguridad.users u
       INNER JOIN shared.genders g ON u.gender_id = g.id
+      LEFT JOIN seguridad.user_roles ur ON u.id = ur.user_id
+      LEFT JOIN seguridad.roles r ON ur.role_id = r.id
       WHERE u.is_deleted = false 
-      ORDER BY u.created_at DESC;
+      ORDER BY u.created_at DESC
+      LIMIT $1 OFFSET $2;
     `;
+    const result = await this.db.query<User>(query, [itemsPerPage, offset]);
+
+    // Limpieza adicional de seguridad por cada registro
+    const data = result.rows.map((user) => {
+      delete user.password_hash;
+      delete user.current_refresh_token;
+      return user;
+    });
+
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    return {
+      data,
+      meta: {
+        total,
+        page: currentPage,
+        limit: itemsPerPage,
+        totalPages: totalPages === 0 ? 1 : totalPages,
+      },
+    };
+  }
+
+  async findInstructors(): Promise<Partial<User>[]> {
+    const query = `
+      SELECT
+        u.id,
+        u.name,
+        u.lastname,
+        u.email,
+        u.username,
+        u.image,
+        u.phone,
+        u.gender_id,
+        g.name AS gender_name,
+        u.created_at,
+        u.updated_at
+      FROM seguridad.users u
+      INNER JOIN shared.genders g ON u.gender_id = g.id
+      INNER JOIN seguridad.user_roles ur ON u.id = ur.user_id
+      INNER JOIN seguridad.roles r ON ur.role_id = r.id
+      WHERE LOWER(r.name) = 'instructor'
+        AND u.is_deleted = false
+      ORDER BY u.name ASC;
+    `;
+
     const result = await this.db.query<User>(query);
     return result.rows;
   }
@@ -121,7 +218,9 @@ export class UsersService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('El correo o el nombre de usuario ya están en uso por otro registro.');
+        throw new ConflictException(
+          'El correo o el nombre de usuario ya están en uso por otro registro.',
+        );
       }
       throw error;
     }
@@ -138,7 +237,9 @@ export class UsersService {
     const result = await this.db.query<User>(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Usuario con ID ${id} no encontrado o ya ha sido eliminado`);
+      throw new NotFoundException(
+        `Usuario con ID ${id} no encontrado o ya ha sido eliminado`,
+      );
     }
 
     const deletedUser = result.rows[0];

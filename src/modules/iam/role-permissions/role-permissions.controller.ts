@@ -4,7 +4,9 @@ import { CreateRolePermissionDto } from './dto/create-role-permission.dto.js';
 
 @Controller('role-permissions')
 export class RolePermissionsController {
-  constructor(private readonly rolePermissionsService: RolePermissionsService) {}
+  constructor(
+    private readonly rolePermissionsService: RolePermissionsService,
+  ) {}
 
   @Post()
   assign(@Body() dto: CreateRolePermissionDto) {

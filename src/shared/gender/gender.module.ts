@@ -7,6 +7,6 @@ import { AuthModule } from '../../modules/iam/auth/auth.module.js';
 @Module({
   imports: [AuthModule],
   providers: [GendersService, DatabaseService],
-  controllers: [GendersController]
+  controllers: [GendersController],
 })
 export class GenderModule {}

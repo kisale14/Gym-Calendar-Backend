@@ -9,6 +9,6 @@ import { AuthModule } from '../../modules/iam/auth/auth.module.js';
   imports: [AuthModule],
   controllers: [CategoriesController],
   providers: [CategoriesService, DatabaseService],
-  exports: [CategoriesService], 
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

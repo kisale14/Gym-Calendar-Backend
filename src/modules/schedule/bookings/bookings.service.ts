@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateBookingDto } from './dto/create-booking.dto.js';
 import { UpdateBookingDto } from './dto/update-booking.dto.js';
@@ -10,12 +16,23 @@ export class BookingsService {
 
   private validateBookingDates(confirmed_at?: string, cancelled_at?: string) {
     if (confirmed_at && cancelled_at) {
-      throw new BadRequestException('Una reserva no puede estar confirmada y cancelada al mismo tiempo.');
+      throw new BadRequestException(
+        'Una reserva no puede estar confirmada y cancelada al mismo tiempo.',
+      );
     }
   }
 
-  async create(createBookingDto: CreateBookingDto, userId?: string): Promise<Booking> {
-    const { user_id, schedule_id, booking_status_id, confirmed_at, cancelled_at } = createBookingDto;
+  async create(
+    createBookingDto: CreateBookingDto,
+    userId?: string,
+  ): Promise<Booking> {
+    const {
+      user_id,
+      schedule_id,
+      booking_status_id,
+      confirmed_at,
+      cancelled_at,
+    } = createBookingDto;
 
     this.validateBookingDates(confirmed_at, cancelled_at);
 
@@ -38,13 +55,19 @@ export class BookingsService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('El usuario ya tiene una reserva registrada para este horario.');
+        throw new ConflictException(
+          'El usuario ya tiene una reserva registrada para este horario.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('El usuario, el horario o el estado de reserva especificado no existen.');
+        throw new NotFoundException(
+          'El usuario, el horario o el estado de reserva especificado no existen.',
+        );
       }
       if (error.code === '23514') {
-        throw new BadRequestException('Las fechas de confirmación y cancelación no cumplen con las reglas de negocio.');
+        throw new BadRequestException(
+          'Las fechas de confirmación y cancelación no cumplen con las reglas de negocio.',
+        );
       }
       throw new InternalServerErrorException('Error al crear la reserva.');
     }
@@ -74,12 +97,17 @@ export class BookingsService {
     return result.rows[0];
   }
 
-  async update(id: string, updateBookingDto: UpdateBookingDto, userId?: string): Promise<Booking> {
+  async update(
+    id: string,
+    updateBookingDto: UpdateBookingDto,
+    userId?: string,
+  ): Promise<Booking> {
     const current = await this.findOne(id);
 
     const user_id = updateBookingDto.user_id ?? current.user_id;
     const schedule_id = updateBookingDto.schedule_id ?? current.schedule_id;
-    const booking_status_id = updateBookingDto.booking_status_id ?? current.booking_status_id;
+    const booking_status_id =
+      updateBookingDto.booking_status_id ?? current.booking_status_id;
     const confirmed_at = updateBookingDto.confirmed_at ?? current.confirmed_at;
     const cancelled_at = updateBookingDto.cancelled_at ?? current.cancelled_at;
 
@@ -112,13 +140,19 @@ export class BookingsService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('Ya existe otra reserva para este usuario y horario.');
+        throw new ConflictException(
+          'Ya existe otra reserva para este usuario y horario.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('Alguna de las referencias (usuario, horario o estado) no es válida.');
+        throw new NotFoundException(
+          'Alguna de las referencias (usuario, horario o estado) no es válida.',
+        );
       }
       if (error.code === '23514') {
-        throw new BadRequestException('Las fechas de confirmación y cancelación no cumplen con las reglas de negocio.');
+        throw new BadRequestException(
+          'Las fechas de confirmación y cancelación no cumplen con las reglas de negocio.',
+        );
       }
       throw new InternalServerErrorException('Error al actualizar la reserva.');
     }

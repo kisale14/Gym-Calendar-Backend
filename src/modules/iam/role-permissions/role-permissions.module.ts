@@ -5,7 +5,7 @@ import { DatabaseService } from '../../../database/database.service.js';
 
 @Module({
   controllers: [RolePermissionsController],
-  providers: [RolePermissionsService, DatabaseService], 
+  providers: [RolePermissionsService, DatabaseService],
   exports: [DatabaseService],
 })
 export class RolePermissionsModule {}

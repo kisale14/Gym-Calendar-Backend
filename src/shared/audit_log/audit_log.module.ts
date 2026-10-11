@@ -9,6 +9,6 @@ import { AuthModule } from '../../modules/iam/auth/auth.module.js';
   imports: [AuthModule],
   controllers: [AuditLogController],
   providers: [AuditLogService, DatabaseService],
-  exports: [AuditLogService], 
+  exports: [AuditLogService],
 })
 export class AuditLogModule {}

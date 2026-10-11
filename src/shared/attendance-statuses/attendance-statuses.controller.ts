@@ -1,5 +1,14 @@
 // src/shared/attendance-statuses/attendance-statuses.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { AttendanceStatusesService } from './attendance-statuses.service.js';
 import { CreateAttendanceStatusDto } from './dto/create-attendance-status.dto.js';
 import { UpdateAttendanceStatusDto } from './dto/update-attendance-status.dto.js';
@@ -11,11 +20,15 @@ import { RequirePermissions } from '../../decorators/permissions.decorator.js';
 @Controller('attendance-statuses')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class AttendanceStatusesController {
-  constructor(private readonly attendanceStatusesService: AttendanceStatusesService) {}
+  constructor(
+    private readonly attendanceStatusesService: AttendanceStatusesService,
+  ) {}
 
   @Post()
   @RequirePermissions('attendance-statuses:create')
-  create(@Body() createAttendanceStatusDto: CreateAttendanceStatusDto): Promise<AttendanceStatus> {
+  create(
+    @Body() createAttendanceStatusDto: CreateAttendanceStatusDto,
+  ): Promise<AttendanceStatus> {
     return this.attendanceStatusesService.create(createAttendanceStatusDto);
   }
 
@@ -33,7 +46,10 @@ export class AttendanceStatusesController {
 
   @Patch(':id')
   @RequirePermissions('attendance-statuses:update')
-  update(@Param('id') id: string, @Body() updateAttendanceStatusDto: UpdateAttendanceStatusDto): Promise<AttendanceStatus> {
+  update(
+    @Param('id') id: string,
+    @Body() updateAttendanceStatusDto: UpdateAttendanceStatusDto,
+  ): Promise<AttendanceStatus> {
     return this.attendanceStatusesService.update(id, updateAttendanceStatusDto);
   }
 

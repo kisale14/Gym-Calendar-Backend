@@ -5,7 +5,7 @@ import { MigrationsService } from './migrations.service.js';
 async function run() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const migrator = app.get(MigrationsService);
-  
+
   try {
     await migrator.runMigrations();
     console.log('Migraciones finalizadas exitosamente.');

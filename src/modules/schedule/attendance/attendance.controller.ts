@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AttendanceService } from './attendance.service.js';
 import { CreateAttendanceDto } from './dto/create-attendance.dto.js';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto.js';
@@ -14,7 +24,10 @@ export class AttendanceController {
 
   @Post()
   @RequirePermissions('attendance:create')
-  create(@Body() createAttendanceDto: CreateAttendanceDto, @Req() req: any): Promise<Attendance> {
+  create(
+    @Body() createAttendanceDto: CreateAttendanceDto,
+    @Req() req: any,
+  ): Promise<Attendance> {
     const userId = req.user?.sub;
     return this.attendanceService.create(createAttendanceDto, userId);
   }

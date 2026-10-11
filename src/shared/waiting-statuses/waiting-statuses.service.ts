@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateWaitingStatusDto } from './dto/create-waiting-status.dto.js';
 import { UpdateWaitingStatusDto } from './dto/update-waiting-status.dto.js';
@@ -8,7 +13,9 @@ import { WaitingStatus } from './entities/waiting-status.entity.js';
 export class WaitingStatusesService {
   constructor(private readonly db: DatabaseService) {}
 
-  async create(createWaitingStatusDto: CreateWaitingStatusDto): Promise<WaitingStatus> {
+  async create(
+    createWaitingStatusDto: CreateWaitingStatusDto,
+  ): Promise<WaitingStatus> {
     const { code, name, description } = createWaitingStatusDto;
 
     try {
@@ -21,9 +28,13 @@ export class WaitingStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Ya existe un estado de espera con el código o nombre especificado.`);
+        throw new ConflictException(
+          `Ya existe un estado de espera con el código o nombre especificado.`,
+        );
       }
-      throw new InternalServerErrorException('Error al crear el estado de espera.');
+      throw new InternalServerErrorException(
+        'Error al crear el estado de espera.',
+      );
     }
   }
 
@@ -38,13 +49,18 @@ export class WaitingStatusesService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Estado de espera con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Estado de espera con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async update(id: string, updateWaitingStatusDto: UpdateWaitingStatusDto): Promise<WaitingStatus> {
+  async update(
+    id: string,
+    updateWaitingStatusDto: UpdateWaitingStatusDto,
+  ): Promise<WaitingStatus> {
     await this.findOne(id);
 
     const { code, name, description } = updateWaitingStatusDto;
@@ -64,9 +80,13 @@ export class WaitingStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Conflicto de unicidad: el código o nombre ya están registrados.`);
+        throw new ConflictException(
+          `Conflicto de unicidad: el código o nombre ya están registrados.`,
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar el estado de espera.');
+      throw new InternalServerErrorException(
+        'Error al actualizar el estado de espera.',
+      );
     }
   }
 
@@ -76,6 +96,8 @@ export class WaitingStatusesService {
     const query = `DELETE FROM shared.waiting_statuses WHERE id = $1;`;
     await this.db.query(query, [id]);
 
-    return { message: `Estado de espera con ID '${id}' eliminado exitosamente.` };
+    return {
+      message: `Estado de espera con ID '${id}' eliminado exitosamente.`,
+    };
   }
 }

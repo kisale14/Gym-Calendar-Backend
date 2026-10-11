@@ -1,5 +1,9 @@
 // src/shared/audit-log/audit-log.service.ts
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateAuditLogDto } from './dto/create-audit_log.dto.js';
 import { AuditLog } from './entities/audit_log.entity.js';
@@ -9,7 +13,16 @@ export class AuditLogService {
   constructor(private readonly db: DatabaseService) {}
 
   async create(createAuditLogDto: CreateAuditLogDto): Promise<AuditLog> {
-    const { table_name, record_id, action, reason, changed_by, old_values, new_values, version } = createAuditLogDto;
+    const {
+      table_name,
+      record_id,
+      action,
+      reason,
+      changed_by,
+      old_values,
+      new_values,
+      version,
+    } = createAuditLogDto;
 
     try {
       const query = `
@@ -29,7 +42,9 @@ export class AuditLogService {
       ]);
       return result.rows[0];
     } catch (error: any) {
-      throw new InternalServerErrorException('Error al registrar la auditoría.');
+      throw new InternalServerErrorException(
+        'Error al registrar la auditoría.',
+      );
     }
   }
 
@@ -44,13 +59,18 @@ export class AuditLogService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Registro de auditoría con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Registro de auditoría con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async findByTableAndRecord(tableName: string, recordId: string): Promise<AuditLog[]> {
+  async findByTableAndRecord(
+    tableName: string,
+    recordId: string,
+  ): Promise<AuditLog[]> {
     const query = `
       SELECT * FROM shared.audit_log 
       WHERE table_name = $1 AND record_id = $2 

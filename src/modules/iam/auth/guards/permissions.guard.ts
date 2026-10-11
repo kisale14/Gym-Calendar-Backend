@@ -1,9 +1,9 @@
-import { 
-  Injectable, 
-  CanActivate, 
-  ExecutionContext, 
-  ForbiddenException, 
-  UnauthorizedException 
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../../../../decorators/permissions.decorator.js';
@@ -18,10 +18,10 @@ export class PermissionsGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // 1. Obtener los permisos requeridos por el decorador en la ruta
-    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(PERMISSIONS_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+      PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     // Si la ruta no requiere ningún permiso específico, se permite el paso
     if (!requiredPermissions || requiredPermissions.length === 0) {
@@ -43,17 +43,22 @@ export class PermissionsGuard implements CanActivate {
       INNER JOIN seguridad.user_roles ur ON rp.role_id = ur.role_id
       WHERE ur.user_id = $1 AND p.name = ANY($2);
     `;
-    
-    const result = await this.db.query(query, [user.userId, requiredPermissions]);
+
+    const result = await this.db.query(query, [
+      user.userId,
+      requiredPermissions,
+    ]);
     const userPermissions = result.rows.map((row) => row.name);
 
     // 3. Verificar si el usuario cumple con al menos uno (o todos) los permisos requeridos
-    const hasPermission = requiredPermissions.every((permission) => 
-      userPermissions.includes(permission)
+    const hasPermission = requiredPermissions.every((permission) =>
+      userPermissions.includes(permission),
     );
 
     if (!hasPermission) {
-      throw new ForbiddenException('No tienes los permisos suficientes para realizar esta acción.');
+      throw new ForbiddenException(
+        'No tienes los permisos suficientes para realizar esta acción.',
+      );
     }
 
     return true;

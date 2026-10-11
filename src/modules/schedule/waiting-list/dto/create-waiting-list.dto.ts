@@ -1,4 +1,11 @@
-import { IsUUID, IsNotEmpty, IsInt, Min, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsUUID,
+  IsNotEmpty,
+  IsInt,
+  Min,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class CreateWaitingListDto {
   @IsUUID()

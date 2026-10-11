@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateWaitingListDto } from './dto/create-waiting-list.dto.js';
 import { UpdateWaitingListDto } from './dto/update-waiting-list.dto.js';
@@ -8,14 +14,25 @@ import { WaitingList } from './entities/waiting-list.entity.js';
 export class WaitingListService {
   constructor(private readonly db: DatabaseService) {}
 
-  private validateDates(dto: { notified_at?: string; confirmation_deadline_at?: string }) {
+  private validateDates(dto: {
+    notified_at?: string;
+    confirmation_deadline_at?: string;
+  }) {
     const { notified_at, confirmation_deadline_at } = dto;
-    if ((notified_at && !confirmation_deadline_at) || (!notified_at && confirmation_deadline_at)) {
-      throw new BadRequestException('Si se especifica la fecha de notificación, el plazo de confirmación es obligatorio (y viceversa).');
+    if (
+      (notified_at && !confirmation_deadline_at) ||
+      (!notified_at && confirmation_deadline_at)
+    ) {
+      throw new BadRequestException(
+        'Si se especifica la fecha de notificación, el plazo de confirmación es obligatorio (y viceversa).',
+      );
     }
   }
 
-  async create(createDto: CreateWaitingListDto, userId?: string): Promise<WaitingList> {
+  async create(
+    createDto: CreateWaitingListDto,
+    userId?: string,
+  ): Promise<WaitingList> {
     this.validateDates(createDto);
 
     const {
@@ -57,15 +74,23 @@ export class WaitingListService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('El usuario ya está en la lista de espera para este horario, o la posición ya se encuentra ocupada.');
+        throw new ConflictException(
+          'El usuario ya está en la lista de espera para este horario, o la posición ya se encuentra ocupada.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('El horario, el usuario o el estado de lista de espera especificado no existen.');
+        throw new NotFoundException(
+          'El horario, el usuario o el estado de lista de espera especificado no existen.',
+        );
       }
       if (error.code === '23514') {
-        throw new BadRequestException('Los datos proporcionados violan las reglas de validación (posición > 0 o restricciones de fechas).');
+        throw new BadRequestException(
+          'Los datos proporcionados violan las reglas de validación (posición > 0 o restricciones de fechas).',
+        );
       }
-      throw new InternalServerErrorException('Error al registrar en la lista de espera.');
+      throw new InternalServerErrorException(
+        'Error al registrar en la lista de espera.',
+      );
     }
   }
 
@@ -87,21 +112,29 @@ export class WaitingListService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Registro en lista de espera con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Registro en lista de espera con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async update(id: string, updateDto: UpdateWaitingListDto, userId?: string): Promise<WaitingList> {
+  async update(
+    id: string,
+    updateDto: UpdateWaitingListDto,
+    userId?: string,
+  ): Promise<WaitingList> {
     const current = await this.findOne(id);
 
     const schedule_id = updateDto.schedule_id ?? current.schedule_id;
     const user_id = updateDto.user_id ?? current.user_id;
-    const waiting_status_id = updateDto.waiting_status_id ?? current.waiting_status_id;
+    const waiting_status_id =
+      updateDto.waiting_status_id ?? current.waiting_status_id;
     const position = updateDto.position ?? current.position;
     const notified_at = updateDto.notified_at ?? current.notified_at;
-    const confirmation_deadline_at = updateDto.confirmation_deadline_at ?? current.confirmation_deadline_at;
+    const confirmation_deadline_at =
+      updateDto.confirmation_deadline_at ?? current.confirmation_deadline_at;
     const confirmed_at = updateDto.confirmed_at ?? current.confirmed_at;
     const declined_at = updateDto.declined_at ?? current.declined_at;
     const cancelled_at = updateDto.cancelled_at ?? current.cancelled_at;
@@ -149,15 +182,23 @@ export class WaitingListService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('Conflicto de unicidad: el usuario ya está registrado o la posición ya está ocupada.');
+        throw new ConflictException(
+          'Conflicto de unicidad: el usuario ya está registrado o la posición ya está ocupada.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('Alguna de las referencias especificadas no existe.');
+        throw new NotFoundException(
+          'Alguna de las referencias especificadas no existe.',
+        );
       }
       if (error.code === '23514') {
-        throw new BadRequestException('Las fechas o la posición no cumplen con las reglas de validación.');
+        throw new BadRequestException(
+          'Las fechas o la posición no cumplen con las reglas de validación.',
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar el registro en lista de espera.');
+      throw new InternalServerErrorException(
+        'Error al actualizar el registro en lista de espera.',
+      );
     }
   }
 
@@ -175,6 +216,8 @@ export class WaitingListService {
     `;
     await this.db.query(query, [userId || null, id]);
 
-    return { message: `Registro en lista de espera con ID '${id}' eliminado exitosamente.` };
+    return {
+      message: `Registro en lista de espera con ID '${id}' eliminado exitosamente.`,
+    };
   }
 }

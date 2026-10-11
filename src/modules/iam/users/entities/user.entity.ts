@@ -5,7 +5,7 @@ export class User {
   date_birth: Date;
   email: string;
   username: string;
-  password_hash: string;
+  password_hash?: string;
   gender_name?: string;
   image?: string | null;
   phone?: string | null;

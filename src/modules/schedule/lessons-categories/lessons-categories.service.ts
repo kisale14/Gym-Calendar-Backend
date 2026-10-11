@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateLessonsCategoryDto } from './dto/create-lessons-category.dto.js';
 import { LessonsCategory } from './entities/lessons-category.entity.js';
@@ -7,7 +12,9 @@ import { LessonsCategory } from './entities/lessons-category.entity.js';
 export class LessonsCategoriesService {
   constructor(private readonly db: DatabaseService) {}
 
-  async assignCategory(createDto: CreateLessonsCategoryDto): Promise<LessonsCategory> {
+  async assignCategory(
+    createDto: CreateLessonsCategoryDto,
+  ): Promise<LessonsCategory> {
     const { lesson_id, category_id } = createDto;
 
     try {
@@ -20,12 +27,18 @@ export class LessonsCategoriesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('La clase ya tiene asignada esta categoría.');
+        throw new ConflictException(
+          'La clase ya tiene asignada esta categoría.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('La clase o la categoría especificada no existen.');
+        throw new NotFoundException(
+          'La clase o la categoría especificada no existen.',
+        );
       }
-      throw new InternalServerErrorException('Error al asignar la categoría a la clase.');
+      throw new InternalServerErrorException(
+        'Error al asignar la categoría a la clase.',
+      );
     }
   }
 
@@ -46,7 +59,10 @@ export class LessonsCategoriesService {
     return result.rows;
   }
 
-  async remove(lessonId: string, categoryId: string): Promise<{ message: string }> {
+  async remove(
+    lessonId: string,
+    categoryId: string,
+  ): Promise<{ message: string }> {
     const query = `
       DELETE FROM scheduling.lessons_categories 
       WHERE lesson_id = $1 AND category_id = $2
@@ -55,7 +71,9 @@ export class LessonsCategoriesService {
     const result = await this.db.query(query, [lessonId, categoryId]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException('La relación entre la clase y la categoría no fue encontrada.');
+      throw new NotFoundException(
+        'La relación entre la clase y la categoría no fue encontrada.',
+      );
     }
 
     return { message: 'Categoría desvinculada de la clase exitosamente.' };

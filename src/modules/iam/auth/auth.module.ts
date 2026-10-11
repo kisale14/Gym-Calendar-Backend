@@ -14,21 +14,21 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard.js'; // <--- Tu guard manu
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET')!,
-        signOptions: { 
-          expiresIn: '15m' // Tiempo de vida del Access Token
+        signOptions: {
+          expiresIn: '15m', // Tiempo de vida del Access Token
         },
       }),
     }),
   ],
   controllers: [AuthController],
   providers: [
-    AuthService, 
-    DatabaseService, 
-    JwtAuthGuard // <--- Registrado para que pueda inyectar JwtService y ConfigService
+    AuthService,
+    DatabaseService,
+    JwtAuthGuard, // <--- Registrado para que pueda inyectar JwtService y ConfigService
   ],
   exports: [
     JwtAuthGuard, // <--- Exportado por si otros módulos necesitan usarlo
-    JwtModule
+    JwtModule,
   ],
 })
 export class AuthModule {}

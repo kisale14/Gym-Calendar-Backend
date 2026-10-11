@@ -1,8 +1,8 @@
-import { 
-  Injectable, 
-  CanActivate, 
-  ExecutionContext, 
-  UnauthorizedException 
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -20,14 +20,18 @@ export class JwtAuthGuard implements CanActivate {
 
     // 1. Validar que la cabecera Authorization exista
     if (!authHeader) {
-      throw new UnauthorizedException('No se proporcionó el token de autenticación.');
+      throw new UnauthorizedException(
+        'No se proporcionó el token de autenticación.',
+      );
     }
 
     // 2. Validar el formato del token (Debe ser "Bearer <token>")
     const [type, token] = authHeader.split(' ');
 
     if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Formato de token inválido. Debe ser: Bearer <token>');
+      throw new UnauthorizedException(
+        'Formato de token inválido. Debe ser: Bearer <token>',
+      );
     }
 
     try {
@@ -43,7 +47,6 @@ export class JwtAuthGuard implements CanActivate {
         email: payload.email,
         username: payload.username,
       };
-
     } catch (error) {
       // Si el token expiró o fue alterado, lanzamos un 401 claro
       throw new UnauthorizedException('El token ha expirado o es inválido.');

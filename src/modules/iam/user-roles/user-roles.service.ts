@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateUserRoleDto } from './dto/create-user-role.dto.js';
 import { RoleWithPermissionsEntity } from './entities/user-role.entity.js';
@@ -23,7 +27,9 @@ export class UserRolesService {
         throw new ConflictException('Este usuario ya tiene asignado este rol.');
       }
       if (error.code === '23503') {
-        throw new NotFoundException('El usuario o el rol especificado no existen.');
+        throw new NotFoundException(
+          'El usuario o el rol especificado no existen.',
+        );
       }
       throw error;
     }
@@ -55,7 +61,9 @@ export class UserRolesService {
       GROUP BY r.id, r.name, r.description, r.created_at
       ORDER BY r.name ASC;
     `;
-    const result = await this.db.query<RoleWithPermissionsEntity>(query, [userId]);
+    const result = await this.db.query<RoleWithPermissionsEntity>(query, [
+      userId,
+    ]);
     return result.rows;
   }
 
@@ -69,7 +77,9 @@ export class UserRolesService {
     const result = await this.db.query(query, [userId, roleId]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException('La relación entre el usuario y el rol no existe.');
+      throw new NotFoundException(
+        'La relación entre el usuario y el rol no existe.',
+      );
     }
 
     return {

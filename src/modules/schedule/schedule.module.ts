@@ -9,7 +9,16 @@ import { AttendanceModule } from './attendance/attendance.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 
 @Module({
-  imports: [LessonsModule, LessonsInstructorsModule, LessonsCategoriesModule, SchedulesModule, BookingsModule, WaitingListModule, AttendanceModule, NotificationsModule],
+  imports: [
+    LessonsModule,
+    LessonsInstructorsModule,
+    LessonsCategoriesModule,
+    SchedulesModule,
+    BookingsModule,
+    WaitingListModule,
+    AttendanceModule,
+    NotificationsModule,
+  ],
   exports: [],
 })
 export class ScheduleModule {}

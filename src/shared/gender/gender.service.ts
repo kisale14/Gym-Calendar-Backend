@@ -1,5 +1,9 @@
 // src/shared/genders/genders.service.ts
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateGenderDto } from './dto/create-gender.dto.js';
 import { UpdateGenderDto } from './dto/update-gender.dto.js';
@@ -21,7 +25,9 @@ export class GendersService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('El nombre de este género ya se encuentra registrado.');
+        throw new ConflictException(
+          'El nombre de este género ya se encuentra registrado.',
+        );
       }
       throw error;
     }
@@ -78,7 +84,9 @@ export class GendersService {
     }
   }
 
-  async remove(id: string): Promise<{ message: string; deletedGender: Gender }> {
+  async remove(
+    id: string,
+  ): Promise<{ message: string; deletedGender: Gender }> {
     try {
       const query = `
         DELETE FROM shared.genders
@@ -99,7 +107,9 @@ export class GendersService {
     } catch (error: any) {
       // Código PostgreSQL para violación de llave foránea (si hay usuarios u otras tablas apuntando a este género)
       if (error.code === '23503') {
-        throw new ConflictException('No se puede eliminar el género porque está asociado a uno o más usuarios.');
+        throw new ConflictException(
+          'No se puede eliminar el género porque está asociado a uno o más usuarios.',
+        );
       }
       throw error;
     }

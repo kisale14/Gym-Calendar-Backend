@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto.js';
 import { PermissionDetailEntity } from './entities/role-permission.entity.js';
@@ -25,14 +29,18 @@ export class RolePermissionsService {
       }
       // Código de error de PostgreSQL para llave foránea no encontrada (rol o permiso no existe)
       if (error.code === '23503') {
-        throw new NotFoundException('El rol o el permiso especificado no existen.');
+        throw new NotFoundException(
+          'El rol o el permiso especificado no existen.',
+        );
       }
       throw error;
     }
   }
 
-  // 2. Obtener todos los permisos que pertenecen a un rol específico 
-  async findPermissionsByRole(roleId: string): Promise<PermissionDetailEntity[]> {
+  // 2. Obtener todos los permisos que pertenecen a un rol específico
+  async findPermissionsByRole(
+    roleId: string,
+  ): Promise<PermissionDetailEntity[]> {
     const query = `
       SELECT p.id, p.name, p.description, p.created_at 
       FROM seguridad.permissions p 
@@ -54,7 +62,9 @@ export class RolePermissionsService {
     const result = await this.db.query(query, [roleId, permissionId]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException('La relación entre el rol y el permiso no existe.');
+      throw new NotFoundException(
+        'La relación entre el rol y el permiso no existe.',
+      );
     }
 
     return {

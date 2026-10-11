@@ -1,5 +1,15 @@
 // src/modules/schedule/bookings/bookings.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { BookingsService } from './bookings.service.js';
 import { CreateBookingDto } from './dto/create-booking.dto.js';
 import { UpdateBookingDto } from './dto/update-booking.dto.js';
@@ -15,7 +25,10 @@ export class BookingsController {
 
   @Post()
   @RequirePermissions('bookings:create')
-  create(@Body() createBookingDto: CreateBookingDto, @Req() req: any): Promise<Booking> {
+  create(
+    @Body() createBookingDto: CreateBookingDto,
+    @Req() req: any,
+  ): Promise<Booking> {
     const userId = req.user?.sub;
     return this.bookingsService.create(createBookingDto, userId);
   }

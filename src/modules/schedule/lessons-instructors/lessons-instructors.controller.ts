@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { LessonsInstructorsService } from './lessons-instructors.service.js';
 import { CreateLessonsInstructorDto } from './dto/create-lessons-instructor.dto.js';
 import { LessonsInstructor } from './entities/lessons-instructor.entity.js';
@@ -9,11 +17,15 @@ import { RequirePermissions } from '../../../decorators/permissions.decorator.js
 @Controller('lessons-instructors')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class LessonsInstructorsController {
-  constructor(private readonly lessonsInstructorsService: LessonsInstructorsService) {}
+  constructor(
+    private readonly lessonsInstructorsService: LessonsInstructorsService,
+  ) {}
 
   @Post()
   @RequirePermissions('lessons_instructors:create')
-  assign(@Body() createDto: CreateLessonsInstructorDto): Promise<LessonsInstructor> {
+  assign(
+    @Body() createDto: CreateLessonsInstructorDto,
+  ): Promise<LessonsInstructor> {
     return this.lessonsInstructorsService.assignInstructor(createDto);
   }
 

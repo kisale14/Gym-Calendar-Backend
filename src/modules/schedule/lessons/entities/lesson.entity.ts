@@ -3,6 +3,8 @@ export class Lesson {
   name: string;
   description?: string;
   max_students: number;
+  pdf_url?: string;
+  image_url?: string;
   is_deleted: boolean;
   deleted_at?: Date;
   deleted_by?: string;

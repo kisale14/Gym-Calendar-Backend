@@ -23,15 +23,19 @@ export class MigrationsService {
       `);
 
       // 2. Obtener las migraciones ya ejecutadas
-      const { rows } = await client.query('SELECT name FROM executed_migrations');
+      const { rows } = await client.query(
+        'SELECT name FROM executed_migrations',
+      );
       const executedSet = new Set(rows.map((r) => r.name));
 
       // 3. Leer la ruta de la carpeta init (ajusta según la ubicación de tu proyecto)
       // Asumiendo que 'database/init' está en la raíz del proyecto
       const initBasePath = path.join(process.cwd(), 'database', 'init');
-      
+
       if (!fs.existsSync(initBasePath)) {
-        this.logger.warn(`No se encontró la ruta de migraciones en: ${initBasePath}`);
+        this.logger.warn(
+          `No se encontró la ruta de migraciones en: ${initBasePath}`,
+        );
         return;
       }
 
@@ -43,7 +47,8 @@ export class MigrationsService {
         if (!fs.statSync(categoryPath).isDirectory()) continue;
 
         // Leer archivos .sql dentro de cada categoría ordenados alfabéticamente
-        const files = fs.readdirSync(categoryPath)
+        const files = fs
+          .readdirSync(categoryPath)
           .filter((file) => file.endsWith('.sql'))
           .sort();
 
@@ -62,7 +67,7 @@ export class MigrationsService {
           // 4. Ejecutar la migración dentro de una transacción
           try {
             await client.query('BEGIN');
-            
+
             // Ejecutar el script SQL del archivo
             await client.query(sqlContent);
 

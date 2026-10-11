@@ -1,6 +1,15 @@
 // src/modules/users/users.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service.js';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import { UsersService, PaginatedResult } from './users.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
@@ -15,8 +24,18 @@ export class UsersController {
   }
 
   @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ): Promise<PaginatedResult<Partial<User>>> {
+    return this.usersService.findAll(page, limit);
+  }
+
+  // IMPORTANTE: esta ruta estática debe ir ANTES de @Get(':id')
+  // para que NestJS no la interprete como un parámetro dinámico
+  @Get('instructors')
+  findInstructors(): Promise<Partial<User>[]> {
+    return this.usersService.findInstructors();
   }
 
   @Get(':id')
@@ -25,7 +44,10 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     return this.usersService.update(id, updateUserDto);
   }
 

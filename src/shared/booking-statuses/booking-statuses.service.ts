@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateBookingStatusDto } from './dto/create-booking-status.dto.js';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto.js';
@@ -8,7 +13,9 @@ import { BookingStatus } from './entities/booking-status.entity.js';
 export class BookingStatusesService {
   constructor(private readonly db: DatabaseService) {}
 
-  async create(createBookingStatusDto: CreateBookingStatusDto): Promise<BookingStatus> {
+  async create(
+    createBookingStatusDto: CreateBookingStatusDto,
+  ): Promise<BookingStatus> {
     const { code, name, description } = createBookingStatusDto;
 
     try {
@@ -21,9 +28,13 @@ export class BookingStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Ya existe un estado de reserva con el código o nombre especificado.`);
+        throw new ConflictException(
+          `Ya existe un estado de reserva con el código o nombre especificado.`,
+        );
       }
-      throw new InternalServerErrorException('Error al crear el estado de reserva.');
+      throw new InternalServerErrorException(
+        'Error al crear el estado de reserva.',
+      );
     }
   }
 
@@ -38,13 +49,18 @@ export class BookingStatusesService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Estado de reserva con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Estado de reserva con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async update(id: string, updateBookingStatusDto: UpdateBookingStatusDto): Promise<BookingStatus> {
+  async update(
+    id: string,
+    updateBookingStatusDto: UpdateBookingStatusDto,
+  ): Promise<BookingStatus> {
     await this.findOne(id);
 
     const { code, name, description } = updateBookingStatusDto;
@@ -64,9 +80,13 @@ export class BookingStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Conflicto de unicidad: el código o nombre ya están registrados.`);
+        throw new ConflictException(
+          `Conflicto de unicidad: el código o nombre ya están registrados.`,
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar el estado de reserva.');
+      throw new InternalServerErrorException(
+        'Error al actualizar el estado de reserva.',
+      );
     }
   }
 
@@ -76,6 +96,8 @@ export class BookingStatusesService {
     const query = `DELETE FROM shared.booking_statuses WHERE id = $1;`;
     await this.db.query(query, [id]);
 
-    return { message: `Estado de reserva con ID '${id}' eliminado exitosamente.` };
+    return {
+      message: `Estado de reserva con ID '${id}' eliminado exitosamente.`,
+    };
   }
 }

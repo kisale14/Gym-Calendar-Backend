@@ -1,7 +1,6 @@
 export class Schedule {
   id: string;
   lesson_id: string;
-  instructor_id: string;
   event_date: string; // O Date, según cómo maneje PostgreSQL el tipo DATE
   start_time: string;
   end_time: string;

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateNotificationDto } from './dto/create-notification.dto.js';
 import { UpdateNotificationDto } from './dto/update-notification.dto.js';
@@ -9,7 +14,16 @@ export class NotificationsService {
   constructor(private readonly db: DatabaseService) {}
 
   async create(createDto: CreateNotificationDto): Promise<Notification> {
-    const { user_id, schedule_id, waiting_list_id, type, subject, message, sent_at, read_at } = createDto;
+    const {
+      user_id,
+      schedule_id,
+      waiting_list_id,
+      type,
+      subject,
+      message,
+      sent_at,
+      read_at,
+    } = createDto;
 
     try {
       const query = `
@@ -32,7 +46,9 @@ export class NotificationsService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23503') {
-        throw new NotFoundException('El usuario, el horario o el registro de la lista de espera especificado no existen.');
+        throw new NotFoundException(
+          'El usuario, el horario o el registro de la lista de espera especificado no existen.',
+        );
       }
       throw new InternalServerErrorException('Error al crear la notificación.');
     }
@@ -62,12 +78,16 @@ export class NotificationsService {
     return result.rows[0];
   }
 
-  async update(id: string, updateDto: UpdateNotificationDto): Promise<Notification> {
+  async update(
+    id: string,
+    updateDto: UpdateNotificationDto,
+  ): Promise<Notification> {
     const current = await this.findOne(id);
 
     const user_id = updateDto.user_id ?? current.user_id;
     const schedule_id = updateDto.schedule_id ?? current.schedule_id;
-    const waiting_list_id = updateDto.waiting_list_id ?? current.waiting_list_id;
+    const waiting_list_id =
+      updateDto.waiting_list_id ?? current.waiting_list_id;
     const type = updateDto.type ?? current.type;
     const subject = updateDto.subject ?? current.subject;
     const message = updateDto.message ?? current.message;
@@ -104,9 +124,13 @@ export class NotificationsService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23503') {
-        throw new NotFoundException('Alguna de las referencias (usuario, horario o lista de espera) no es válida.');
+        throw new NotFoundException(
+          'Alguna de las referencias (usuario, horario o lista de espera) no es válida.',
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar la notificación.');
+      throw new InternalServerErrorException(
+        'Error al actualizar la notificación.',
+      );
     }
   }
 

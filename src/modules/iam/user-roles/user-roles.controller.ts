@@ -17,10 +17,7 @@ export class UserRolesController {
   }
 
   @Delete('user/:userId/role/:roleId')
-  remove(
-    @Param('userId') userId: string,
-    @Param('roleId') roleId: string,
-  ) {
+  remove(@Param('userId') userId: string, @Param('roleId') roleId: string) {
     return this.userRolesService.removeRole(userId, roleId);
   }
 }

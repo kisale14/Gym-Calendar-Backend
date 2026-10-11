@@ -1,5 +1,10 @@
 // src/shared/attendance-statuses/attendance-statuses.service.ts
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateAttendanceStatusDto } from './dto/create-attendance-status.dto.js';
 import { UpdateAttendanceStatusDto } from './dto/update-attendance-status.dto.js';
@@ -9,7 +14,9 @@ import { AttendanceStatus } from './entities/attendance-status.entity.js';
 export class AttendanceStatusesService {
   constructor(private readonly db: DatabaseService) {}
 
-  async create(createAttendanceStatusDto: CreateAttendanceStatusDto): Promise<AttendanceStatus> {
+  async create(
+    createAttendanceStatusDto: CreateAttendanceStatusDto,
+  ): Promise<AttendanceStatus> {
     const { code, name, description } = createAttendanceStatusDto;
 
     try {
@@ -22,9 +29,13 @@ export class AttendanceStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Ya existe un estado de asistencia con el código o nombre especificado.`);
+        throw new ConflictException(
+          `Ya existe un estado de asistencia con el código o nombre especificado.`,
+        );
       }
-      throw new InternalServerErrorException('Error al crear el estado de asistencia.');
+      throw new InternalServerErrorException(
+        'Error al crear el estado de asistencia.',
+      );
     }
   }
 
@@ -39,13 +50,18 @@ export class AttendanceStatusesService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Estado de asistencia con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Estado de asistencia con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async update(id: string, updateAttendanceStatusDto: UpdateAttendanceStatusDto): Promise<AttendanceStatus> {
+  async update(
+    id: string,
+    updateAttendanceStatusDto: UpdateAttendanceStatusDto,
+  ): Promise<AttendanceStatus> {
     await this.findOne(id);
 
     const { code, name, description } = updateAttendanceStatusDto;
@@ -65,9 +81,13 @@ export class AttendanceStatusesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Conflicto de unicidad: el código o nombre ya están registrados.`);
+        throw new ConflictException(
+          `Conflicto de unicidad: el código o nombre ya están registrados.`,
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar el estado de asistencia.');
+      throw new InternalServerErrorException(
+        'Error al actualizar el estado de asistencia.',
+      );
     }
   }
 
@@ -77,6 +97,8 @@ export class AttendanceStatusesService {
     const query = `DELETE FROM shared.attendance_statuses WHERE id = $1;`;
     await this.db.query(query, [id]);
 
-    return { message: `Estado de asistencia con ID '${id}' eliminado exitosamente.` };
+    return {
+      message: `Estado de asistencia con ID '${id}' eliminado exitosamente.`,
+    };
   }
 }

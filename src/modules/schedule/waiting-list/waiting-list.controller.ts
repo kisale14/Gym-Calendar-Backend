@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { WaitingListService } from './waiting-list.service.js';
 import { CreateWaitingListDto } from './dto/create-waiting-list.dto.js';
 import { UpdateWaitingListDto } from './dto/update-waiting-list.dto.js';
@@ -14,7 +24,10 @@ export class WaitingListController {
 
   @Post()
   @RequirePermissions('waiting_list:create')
-  create(@Body() createDto: CreateWaitingListDto, @Req() req: any): Promise<WaitingList> {
+  create(
+    @Body() createDto: CreateWaitingListDto,
+    @Req() req: any,
+  ): Promise<WaitingList> {
     const userId = req.user?.sub;
     return this.waitingListService.create(createDto, userId);
   }

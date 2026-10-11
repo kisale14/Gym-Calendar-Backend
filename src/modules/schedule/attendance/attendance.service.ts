@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { CreateAttendanceDto } from './dto/create-attendance.dto.js';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto.js';
@@ -8,8 +14,12 @@ import { Attendance } from './entities/attendance.entity.js';
 export class AttendanceService {
   constructor(private readonly db: DatabaseService) {}
 
-  async create(createAttendanceDto: CreateAttendanceDto, userId?: string): Promise<Attendance> {
-    const { schedule_id, user_id, attendance_status_id, attended_at, notes } = createAttendanceDto;
+  async create(
+    createAttendanceDto: CreateAttendanceDto,
+    userId?: string,
+  ): Promise<Attendance> {
+    const { schedule_id, user_id, attendance_status_id, attended_at, notes } =
+      createAttendanceDto;
 
     try {
       const query = `
@@ -30,12 +40,18 @@ export class AttendanceService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('Ya existe un registro de asistencia para este usuario en el horario indicado.');
+        throw new ConflictException(
+          'Ya existe un registro de asistencia para este usuario en el horario indicado.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('El horario, el usuario o el estado de asistencia especificado no existen.');
+        throw new NotFoundException(
+          'El horario, el usuario o el estado de asistencia especificado no existen.',
+        );
       }
-      throw new InternalServerErrorException('Error al registrar la asistencia.');
+      throw new InternalServerErrorException(
+        'Error al registrar la asistencia.',
+      );
     }
   }
 
@@ -57,18 +73,25 @@ export class AttendanceService {
     const result = await this.db.query(query, [id]);
 
     if (result.rows.length === 0) {
-      throw new NotFoundException(`Registro de asistencia con ID '${id}' no encontrado.`);
+      throw new NotFoundException(
+        `Registro de asistencia con ID '${id}' no encontrado.`,
+      );
     }
 
     return result.rows[0];
   }
 
-  async update(id: string, updateAttendanceDto: UpdateAttendanceDto, userId?: string): Promise<Attendance> {
+  async update(
+    id: string,
+    updateAttendanceDto: UpdateAttendanceDto,
+    userId?: string,
+  ): Promise<Attendance> {
     const current = await this.findOne(id);
 
     const schedule_id = updateAttendanceDto.schedule_id ?? current.schedule_id;
     const user_id = updateAttendanceDto.user_id ?? current.user_id;
-    const attendance_status_id = updateAttendanceDto.attendance_status_id ?? current.attendance_status_id;
+    const attendance_status_id =
+      updateAttendanceDto.attendance_status_id ?? current.attendance_status_id;
     const attended_at = updateAttendanceDto.attended_at ?? current.attended_at;
     const notes = updateAttendanceDto.notes ?? current.notes;
 
@@ -99,12 +122,18 @@ export class AttendanceService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('Ya existe otro registro de asistencia para este usuario y horario.');
+        throw new ConflictException(
+          'Ya existe otro registro de asistencia para este usuario y horario.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('Alguna de las referencias (horario, usuario o estado) no es válida.');
+        throw new NotFoundException(
+          'Alguna de las referencias (horario, usuario o estado) no es válida.',
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar el registro de asistencia.');
+      throw new InternalServerErrorException(
+        'Error al actualizar el registro de asistencia.',
+      );
     }
   }
 
@@ -122,6 +151,8 @@ export class AttendanceService {
     `;
     await this.db.query(query, [userId || null, id]);
 
-    return { message: `Registro de asistencia con ID '${id}' eliminado exitosamente.` };
+    return {
+      message: `Registro de asistencia con ID '${id}' eliminado exitosamente.`,
+    };
   }
 }

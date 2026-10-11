@@ -16,9 +16,6 @@ import { AuditLogModule } from './audit_log/audit_log.module.js';
     AttendanceStatusesModule,
     AuditLogModule,
   ],
-  exports: [
-    GenderModule,
-    CategoriesModule
-  ],
+  exports: [GenderModule, CategoriesModule],
 })
 export class SharedModule {}

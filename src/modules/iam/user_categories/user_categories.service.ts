@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../../database/database.service.js';
 import { AssignCategoryToUserDto } from './dto/create-user_category.dto.js';
 import { UserCategory } from './entities/user_category.entity.js';
@@ -20,12 +25,18 @@ export class UserCategoriesService {
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException('El usuario ya tiene asignada esta categoría.');
+        throw new ConflictException(
+          'El usuario ya tiene asignada esta categoría.',
+        );
       }
       if (error.code === '23503') {
-        throw new NotFoundException('El usuario o la categoría especificada no existen.');
+        throw new NotFoundException(
+          'El usuario o la categoría especificada no existen.',
+        );
       }
-      throw new InternalServerErrorException('Error al asignar la categoría al usuario.');
+      throw new InternalServerErrorException(
+        'Error al asignar la categoría al usuario.',
+      );
     }
   }
 
@@ -40,7 +51,10 @@ export class UserCategoriesService {
     return result.rows;
   }
 
-  async removeCategoryFromUser(userId: string, categoryId: string): Promise<{ message: string }> {
+  async removeCategoryFromUser(
+    userId: string,
+    categoryId: string,
+  ): Promise<{ message: string }> {
     const query = `
       DELETE FROM seguridad.user_categories 
       WHERE user_id = $1 AND category_id = $2;
@@ -48,7 +62,9 @@ export class UserCategoriesService {
     const result = await this.db.query(query, [userId, categoryId]);
 
     if (result.rowCount === 0) {
-      throw new NotFoundException('La relación entre el usuario y la categoría no fue encontrada.');
+      throw new NotFoundException(
+        'La relación entre el usuario y la categoría no fue encontrada.',
+      );
     }
 
     return { message: 'Categoría desvinculada del usuario exitosamente.' };

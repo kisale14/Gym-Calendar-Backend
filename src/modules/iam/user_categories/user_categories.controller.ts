@@ -1,5 +1,13 @@
 // src/modules/iam/user-categories/user-categories.controller.ts
-import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { UserCategoriesService } from './user_categories.service.js';
 import { AssignCategoryToUserDto } from './dto/create-user_category.dto.js';
 import { UserCategory } from './entities/user_category.entity.js';
@@ -30,6 +38,9 @@ export class UserCategoriesController {
     @Param('userId') userId: string,
     @Param('categoryId') categoryId: string,
   ): Promise<{ message: string }> {
-    return this.userCategoriesService.removeCategoryFromUser(userId, categoryId);
+    return this.userCategoriesService.removeCategoryFromUser(
+      userId,
+      categoryId,
+    );
   }
 }

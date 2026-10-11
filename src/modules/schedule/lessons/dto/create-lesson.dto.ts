@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsOptional,
+  IsInt,
+  Min,
+  IsArray,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateLessonDto {
   @IsString()
@@ -14,4 +23,14 @@ export class CreateLessonDto {
   @Min(0)
   @IsNotEmpty()
   max_students: number;
+
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  instructor_ids?: string[];
+
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  category_ids?: string[];
 }

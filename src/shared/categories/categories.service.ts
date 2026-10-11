@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service.js';
 import { CreateCategoryDto } from './dto/create-category.dto.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
@@ -17,12 +22,19 @@ export class CategoriesService {
         VALUES ($1, $2, $3, $4)
         RETURNING *;
       `;
-      const result = await this.db.query(query, [name, description, color, icon]);
+      const result = await this.db.query(query, [
+        name,
+        description,
+        color,
+        icon,
+      ]);
       return result.rows[0];
     } catch (error: any) {
       // Manejo de error por violación de restricción UNIQUE en el nombre
       if (error.code === '23505') {
-        throw new ConflictException(`La categoría con el nombre '${name}' ya existe.`);
+        throw new ConflictException(
+          `La categoría con el nombre '${name}' ya existe.`,
+        );
       }
       throw new InternalServerErrorException('Error al crear la categoría.');
     }
@@ -45,7 +57,10 @@ export class CategoriesService {
     return result.rows[0];
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
     // Primero verificamos que exista
     await this.findOne(id);
 
@@ -63,13 +78,23 @@ export class CategoriesService {
         WHERE id = $5
         RETURNING *;
       `;
-      const result = await this.db.query(query, [name, description, color, icon, id]);
+      const result = await this.db.query(query, [
+        name,
+        description,
+        color,
+        icon,
+        id,
+      ]);
       return result.rows[0];
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new ConflictException(`Ya existe otra categoría con el nombre especificado.`);
+        throw new ConflictException(
+          `Ya existe otra categoría con el nombre especificado.`,
+        );
       }
-      throw new InternalServerErrorException('Error al actualizar la categoría.');
+      throw new InternalServerErrorException(
+        'Error al actualizar la categoría.',
+      );
     }
   }
 

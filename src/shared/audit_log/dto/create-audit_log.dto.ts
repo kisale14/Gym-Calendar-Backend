@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, MaxLength, IsOptional, IsUUID, IsInt, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsOptional,
+  IsUUID,
+  IsInt,
+  IsObject,
+} from 'class-validator';
 
 export class CreateAuditLogDto {
   @IsString()

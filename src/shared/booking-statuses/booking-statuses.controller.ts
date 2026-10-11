@@ -1,5 +1,14 @@
 // src/shared/booking-statuses/booking-statuses.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { BookingStatusesService } from './booking-statuses.service.js';
 import { CreateBookingStatusDto } from './dto/create-booking-status.dto.js';
 import { UpdateBookingStatusDto } from './dto/update-booking-status.dto.js';
@@ -11,11 +20,15 @@ import { RequirePermissions } from '../../decorators/permissions.decorator.js';
 @Controller('booking-statuses')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class BookingStatusesController {
-  constructor(private readonly bookingStatusesService: BookingStatusesService) {}
+  constructor(
+    private readonly bookingStatusesService: BookingStatusesService,
+  ) {}
 
   @Post()
   @RequirePermissions('booking-statuses:create')
-  create(@Body() createBookingStatusDto: CreateBookingStatusDto): Promise<BookingStatus> {
+  create(
+    @Body() createBookingStatusDto: CreateBookingStatusDto,
+  ): Promise<BookingStatus> {
     return this.bookingStatusesService.create(createBookingStatusDto);
   }
 
@@ -33,7 +46,10 @@ export class BookingStatusesController {
 
   @Patch(':id')
   @RequirePermissions('booking-statuses:update')
-  update(@Param('id') id: string, @Body() updateBookingStatusDto: UpdateBookingStatusDto): Promise<BookingStatus> {
+  update(
+    @Param('id') id: string,
+    @Body() updateBookingStatusDto: UpdateBookingStatusDto,
+  ): Promise<BookingStatus> {
     return this.bookingStatusesService.update(id, updateBookingStatusDto);
   }
 

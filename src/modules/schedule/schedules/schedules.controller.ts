@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { SchedulesService } from './schedules.service.js';
 import { CreateScheduleDto } from './dto/create-schedule.dto.js';
 import { UpdateScheduleDto } from './dto/update-schedule.dto.js';
@@ -14,7 +24,10 @@ export class SchedulesController {
 
   @Post()
   @RequirePermissions('schedules:create')
-  create(@Body() createScheduleDto: CreateScheduleDto, @Req() req: any): Promise<Schedule> {
+  create(
+    @Body() createScheduleDto: CreateScheduleDto,
+    @Req() req: any,
+  ): Promise<Schedule> {
     const userId = req.user?.sub;
     return this.schedulesService.create(createScheduleDto, userId);
   }

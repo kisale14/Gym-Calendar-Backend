@@ -6,6 +6,6 @@ import { DatabaseService } from '../../../database/database.service.js';
 @Module({
   controllers: [PermissionsController],
   providers: [PermissionsService, DatabaseService],
-  exports: [DatabaseService]
+  exports: [DatabaseService],
 })
 export class PermissionsModule {}
